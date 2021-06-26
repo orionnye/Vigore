@@ -1,9 +1,8 @@
-import Character from './Character';
 import { Vector } from './math';
 import { fillRectCenter, strokeRect, drawText } from "./render";
 
 export default class Card {
-    
+
     size = new Vector(2/3, 1);
     scale : number;
     pos : Vector;
@@ -15,23 +14,32 @@ export default class Card {
         this.size = new Vector(3/4, 1);
         this.scale = 100;
         this.pos = new Vector(0, 0);
-        this.cost = 0;
-        //!!!!!!!!!!!!!!THING WE CAN WATCH FOR!!!!!!!!!!!!!!!!!!!!
-        //since there will only be one enemy at a time we can hard code the characters here
+        this.cost = Math.floor(Math.random()*10);
         this.onApply;
-        this.color = "black";
+        this.color = `rgb(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255})`;
     }
-    apply(caster: Character, target: Character) {
-        if (this.onApply == undefined) {
-            caster.health += this.cost;
-            target.health += this.cost / 2;
-        } else {
-            this.onApply(caster, target);
+    get dimensions() {
+        return this.size.scale(this.scale)
+    }
+    contains(point: Vector) {
+        let far = this.pos.add(this.size);
+        if (point.x >= this.pos.x && point.x <= far.x) {
+            if (point.y >= this.pos.y && point.y <= far.y) {
+                return true
+            }
+            return false
+        }
+        return false
+    }
+    seek(point) {
+        let dist = point.subtract(this.pos);
+        if (point.subtract(this.pos).length > 3) {
+            let fix = dist.multiply(0.3);
+            this.pos = this.pos.add(fix);
         }
     }
-    render( destination : Vector ) {
-        let adjustedPos = this.pos.add(destination);
-        fillRectCenter(adjustedPos, this.size.scale(this.scale), this.color);
-        drawText(adjustedPos.subtract(new Vector(48, 40)), this.scale / 2, this.cost.toString(), "white");
+    render() {
+        fillRectCenter(this.pos, this.size.scale(this.scale), this.color);
+        drawText(this.pos.subtract(new Vector(this.dimensions.x, 50)), this.scale / 2, this.cost.toString(), "white");
     }
 }

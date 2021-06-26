@@ -30,3 +30,7 @@ export class Vector {
         return dist
     }
 }
+
+export function randomFloor(upperLimit: number) {
+    return Math.floor(Math.random()*upperLimit);
+}

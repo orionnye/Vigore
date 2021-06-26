@@ -7,34 +7,24 @@ export default class Input {
     constructor() {
         this.keys = new Map()
         this.mouse = new Map()
-        this.cursor = new Vector(0, 0)
-    }
-    
-    setKeyTrue(e: KeyboardEvent) {
-        this.keys.set(e.key, true)
-        console.log(e.key)
-    }
-    setKeyFalse(e: KeyboardEvent) {
-        this.keys.set(e.key, false)
-    }
-    setMouse(button: number, value: boolean) {
-        this.mouse.set(button, value)
-    }
-    setCursor(newPoint: Vector) {
-        this.cursor = newPoint
+        this.cursor = new Vector( 0, 0 )
+
+        this.watchCursor()
+        this.watchMouse()
+        this.watchKeys()
     }
     watchKeys() {
-        console.log("starting key watch")
-        window.addEventListener("keydown", (e) => this.setKeyTrue(e))
-        window.addEventListener("keyup", (e) => this.setKeyFalse(e))
+        console.log( "starting key watch" )
+        window.addEventListener( "keydown", ( e ) => this.keys.set( e.key.toLowerCase(), true ) )
+        window.addEventListener( "keyup", ( e ) => this.keys.set( e.key.toLowerCase(), false ) )
     }
     watchMouse() {
-        console.log("starting mouse watch")
-        window.addEventListener("mousedown", (e) => this.setMouse(e.button, true))
-        window.addEventListener("mouseup", (e) => this.setMouse(e.button, false))
+        console.log( "starting mouse watch" )
+        window.addEventListener( "mousedown", ( e ) => this.mouse.set( e.button, true ) )
+        window.addEventListener( "mouseup", ( e ) => this.mouse.set( e.button, false ) )
     }
     watchCursor() {
-        console.log("starting cursor watch")
-        window.addEventListener("mousemove", (e) => this.setCursor(new Vector(e.x, e.y)))
+        console.log( "starting cursor watch" )
+        window.addEventListener( "mousemove", ( e ) => this.cursor = new Vector( e.x, e.y ) )
     }
 }

@@ -1,103 +1,68 @@
-import Character from './Character';
+import Unit from './Unit';
 import { Vector } from './math';
 import { fillCircle, drawImage, strokeRect,
     fillRect, fillRectCenter, drawText } from './render';
 import Input from './input';
 import Card from './Card';
+import UI from './UI';
 
 //-------Page Access-------
 let canvas = <HTMLCanvasElement> document.getElementById("canvas1");
 let c = canvas.getContext('2d');
 let canvasSize = new Vector(canvas.clientWidth, canvas.clientHeight);
 
-//-------World Data----------
-let player = new Character();
-let enemy = new Character();
-//player Input
+//-------Player Input----------
 let input = new Input();
 input.watchCursor();
+input.watchMouse();
 input.watchKeys();
+window.addEventListener("keyup", (e) => {
+    // console.log(e.key);
+    if (e.key == "Enter") {
+        console.log("Card Cycle!");
+        player.endTurn(500);
+    }
+});
 
-//!!!!!!!!!!!!!!!!!!TEMP DATA STORE!!!!!!!!!!!!!!!!!!!!!!
-//text store data
+//-------World Data----------
+let player = new Unit();
+player.pos = new Vector(300, 100);
 
+//temp Card Data storage
+player.hand.getRandomCards(5);
+player.hand.pos = new Vector(260, 440);
+player.hand.offset = new Vector(90, 0);
 
-//TEMP DECK STORE
-let cards = [];
-for (let i = 0; i < 4; i++) {
-    let card = new Card();
-    // card.cost = Math.floor(Math.random()*5);
-    card.cost = i;
-    cards.push(card);
-}
+player.draw.getRandomCards(10);
+player.draw.pos = new Vector(40, 440);
+player.draw.offset = new Vector(2, 2);
 
-//TEMP CARDTYPE DATA STORE
-//sqrt both characters
-cards[0].onApply = (player, enemy) => {
-    player.health = Math.ceil(Math.sqrt(player.health));
-    enemy.health = Math.ceil(Math.sqrt(enemy.health));
-}
-//increase max Health but cut health
-cards[1].onApply = (player, enemy) => {
-    player.maxHealth += 10;
-    player.health -= 10;
-}
-//damages enemy and damages player by less
-cards[2].onApply = (player, enemy) => {
-    enemy.health -= 10;
-    player.health -= 5;
-}
-//heals player
-cards[3].onApply = (player, enemy) => {
-    player.health += 10;
-    enemy.health += 5;
-}
+player.discard.getRandomCards(1);
+player.discard.pos = new Vector(850, 440);
+player.discard.offset = new Vector(2, 2);
 
-//--hand--
-let selected = cards.length;
+let enemy = new Unit();
+enemy.pos = new Vector(500, 100);
 
 //-------CORE GAME LOOP
 function update() {
-    if (input.keys.get("ArrowRight") && selected < cards.length -1) {
-        selected += 1;
-    } 
-    else if (input.keys.get("ArrowLeft") && selected > 0) {
-        selected -= 1;
-    }
-    if (input.keys.get("Enter")) {
-        if (selected < cards.length && selected >= 0) {
-            console.log(cards[selected].cost)
-            cards[selected].apply(player, enemy);
-        }
-    }
+    player.hand.update()
+    player.draw.update()
+    player.discard.update()
 }
+
 function render() {
     //clear canvas
     fillRect(new Vector(0, 0), canvasSize, "beige");
-    
-    //player
-    player.render(new Vector(250, 50));
-    //enemy
-    enemy.render(new Vector(550, 50));
 
-    //deck render
-    cards.forEach((card, index) => {
-        //selection animation
-        let popUp = 0
-        let scaleCap = 120;
-        let scaleMin = 100;
-        let popUpMax = 30;
-        if (index == selected) {
-            if (card.scale < scaleCap) {
-                card.scale += 5;
-            }
-            popUp = popUpMax
-        }
-        else if (card.scale > scaleMin){
-            card.scale -= 5;
-        }
-        card.render(new Vector(300 + index*100, 460 - popUp));
-    });
+    //players
+    fillRect(player.pos, player.dim, "red");
+    fillRect(enemy.pos, enemy.dim, "blue");
+
+    //deck
+    player.draw.render()
+    player.hand.render()
+    player.discard.render()
 }
 function reload() {
     update();
