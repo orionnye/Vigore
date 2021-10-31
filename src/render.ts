@@ -1,4 +1,4 @@
-import { Vector } from "./math";
+import { randomFloor, Vector } from "./math";
 
 export let canvas = <HTMLCanvasElement> document.getElementById("canvas1");
 let canvasSize = new Vector(canvas.clientWidth, canvas.clientHeight);
@@ -23,10 +23,20 @@ export function strokeRect(pos: Vector, size: Vector, color: string = "black") {
 export function fillCircle(pos: Vector, radius: number, color: string = "black") {
     c.beginPath();
     c.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+    c.strokeStyle = color;
     c.stroke();
     c.fillStyle = color;
     c.fill();
 }
+export function scatterCircles(count: number, pos: Vector, range: Vector, size: number, color: string) {
+    let bubbleCount = randomFloor(count) + count;
+    for (let i = 0; i < bubbleCount; i++) {
+        let x = randomFloor(range.x);
+        let y = randomFloor(range.y);
+        fillCircle(pos.add(new Vector(x, y)), size, color);
+    }
+}
+
 
 //Text
 export function drawText(pos: Vector, size: number, text: string, color: string = "black") {

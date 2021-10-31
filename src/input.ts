@@ -21,7 +21,10 @@ export default class Input {
     watchMouse() {
         console.log( "starting mouse watch" )
         window.addEventListener( "mousedown", ( e ) => this.mouse.set( e.button, true ) )
-        window.addEventListener( "mouseup", ( e ) => this.mouse.set( e.button, false ) )
+        window.addEventListener( "mouseup", ( e ) => {
+            this.mouse.set( e.button, false )
+            // console.log(e.button)
+        })
     }
     watchCursor() {
         console.log( "starting cursor watch" )
