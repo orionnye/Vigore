@@ -1,2 +1,2 @@
 # Vigore
-A deck builder with only a single stat
+A deck builder with two stats
